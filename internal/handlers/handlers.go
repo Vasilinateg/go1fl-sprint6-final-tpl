@@ -53,7 +53,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	converted, err := service.ProcessData(string(content))
+	original := string(content)
+
+	converted, err := service.ProcessData(original)
 	if err != nil {
 		http.Error(w, "Ошибка при конвертации", http.StatusInternalServerError)
 		return
@@ -75,8 +77,12 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Файл успешно сконвертирован!\n\n"))
-	w.Write([]byte("Результат:\n"))
+
+	w.Write([]byte(original))
+	w.Write([]byte("\n\n"))
+
+	w.Write([]byte("Сконвертированный текст:\n"))
 	w.Write([]byte(converted))
-	w.Write([]byte("\n\nРезультат также сохранен в файл: " + outputFilename))
+	w.Write([]byte("\n\nРезультат сохранен в файл: "))
+	w.Write([]byte(outputFilename))
 }
